@@ -1,32 +1,32 @@
 #!/bin/bash
-# $Id: preppics,v 1.5 2021/04/27 11:35:05 fulford Exp fulford $
+# $Id: preppics,v 1.6 2021/04/27 11:38:55 fulford Exp fulford $
 # $Source: /src/admin/usr/local/etc/RCS/preppics,v $
-# $Revision: 1.5 $
+# $Revision: 1.6 $
 # Author C W Fulford.
 # Copyright 2019 (c) C W Fulford.
 # Licensed for public use under the LGPL, .
 # For assistance contact fulford@fulford.net 0793 572 8612
 ########################################################################
 cmd=`basename $0`
-ver=`echo "$Id: preppics,v 1.5 2021/04/27 11:35:05 fulford Exp fulford $"|awk '{print $3,$4,$5}'`
+ver=`echo "$Id: preppics,v 1.6 2021/04/27 11:38:55 fulford Exp fulford $"|awk '{print $3,$4,$5}'`
 syntax="$cmd [-c <configfile>] [-d] [-h <hostid>] [-v]|-V"
-export PATH=$PATH:/usr/bin
 echo $PATH
+exiftool=/usr/bin/exiftool
 while [ $# -gt 0 ] ;do
 	case $1 in 
 		-c) config=$2;shift 2;;
 		-d) set -x;debug=0;shift;;
 		-h) hostid=$2;shift 2;;			
 		-v) verbose=:;shift;;
-		-V) echo "$cmd $Revision: 1.5 $ $Date: 2021/04/27 11:35:05 $"|awk '{print $1,$3,$6}';exit;;  
+		-V) echo "$cmd $Revision: 1.6 $ $Date: 2021/04/27 11:38:55 $"|awk '{print $1,$3,$6}';exit;;  
 		*) files="$files $1";shift;;
 	esac
 done
-[ -x exiftool ] || echo "$cmd: exiftool not found";exit 1
+[ -x $exiftool ] || echo "$cmd: $exiftool not found";exit 1
 config=${config:-/usr/local/etc/${cmd}.cf
 [ -r $config ]||{echo "$cmd: Can't find $config";exit 1}
 #eval `sed <$config -ne "/^$hostid:/,/^$/{/^[\t ]*[^#].*/p}"`
 [ $verbose ] && echo "$cmd: Updating $files"
 [ $verbose ] && echo "Adding Artist, Publisher and Copyright"
-exiftool -Artist="$(</usr/local/etc/artist)"  -Publisher="$(</usr/local/etc/publisher)"  -Copyright="`/usr/local/etc/copyright`" $files
+$exiftool -Artist="$(</usr/local/etc/artist)"  -Publisher="$(</usr/local/etc/publisher)"  -Copyright="`/usr/local/etc/copyright`" $files
 rm *_original
